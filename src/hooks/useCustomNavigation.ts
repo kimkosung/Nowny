@@ -44,14 +44,11 @@ export const navigationRef = createNavigationContainerRef<RootStackParamList>();
 export const globalNavigation = {
   navigate: (routeName: string) => {
     if (navigationRef.isReady()) {
-      // 경로 형식: "스택/스크린" 또는 "스택"
       const parts = routeName.split('/');
 
       if (parts.length === 1) {
-        // 단순 스택 이동 - 타입 에러 수정
         navigationRef.navigate(parts[0] as keyof RootStackParamList, undefined);
       } else if (parts.length === 2) {
-        // 중첩 스크린 이동
         const [stack, screen] = parts;
         if (stack === 'Main') {
           navigationRef.navigate('Main', {
@@ -107,11 +104,9 @@ export function useCustomNavigation() {
   const route = useRoute<RouteProp<RootStackParamList>>();
 
   return {
-    // 원본 네비게이션 객체
     navigation,
     route,
 
-    // 특정 화면으로 이동 (파라미터 지원 추가)
     navigateTo: (routePath: string, params?: any) => {
       const parts = routePath.split('/');
 
@@ -145,7 +140,7 @@ export function useCustomNavigation() {
     // 현재 라우트 이름 가져오기
     getCurrentRouteName: () => route.name,
 
-    // 특정 스크린으로 리셋 (파라미터 지원 추가)
+    // 특정 스크린으로 리셋
     reset: (routeName: string, params?: any) => {
       const parts = routeName.split('/');
 

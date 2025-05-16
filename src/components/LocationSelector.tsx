@@ -14,11 +14,11 @@ import BottomSheet, {
   BottomSheetView,
 } from '@gorhom/bottom-sheet';
 import {BottomSheetDefaultBackdropProps} from '@gorhom/bottom-sheet/lib/typescript/components/bottomSheetBackdrop/types';
+import {Portal} from '@gorhom/portal';
+
 const {height} = Dimensions.get('window');
 
-// 타입 정의
 type District = string;
-type Dong = string;
 
 interface City {
   city: string;
@@ -84,7 +84,6 @@ const locationData: Region[] = [
   },
 ];
 
-// 동 데이터 맵 타입
 interface DongMap {
   [key: string]: string[];
 }
@@ -93,7 +92,6 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
   currentLocation = '강남구 삼성동',
   onLocationChange,
 }) => {
-  // 초기 위치 파싱
   const parseInitialLocation = (): {
     district: string;
     dong: string;
@@ -121,13 +119,10 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
     initialLocation.dong,
   );
 
-  // 바텀 시트 참조
   const bottomSheetRef = useRef<BottomSheet>(null);
 
-  // 고정 스냅포인트 설정 - 화면 높이의 퍼센트로 지정
   const snapPoints = useMemo(() => ['70%'], []);
 
-  // 바텀 시트 백드롭 설정
   const renderBackdrop = useCallback(
     (
       props: React.JSX.IntrinsicAttributes & BottomSheetDefaultBackdropProps,
@@ -152,7 +147,6 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
     bottomSheetRef.current?.close();
   }, []);
 
-  // 동 데이터 (예시)
   const getDongData = useCallback((district: string): string[] => {
     const dongMap: DongMap = {
       강남구: ['삼성동', '역삼동', '청담동', '논현동', '대치동'],
@@ -194,7 +188,6 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
 
   return (
     <>
-      {/* 현재 위치 버튼 */}
       <TouchableOpacity style={styles.locationButton} onPress={openBottomSheet}>
         <Ionicons name="location" size={20} color="#FFA135" />
         <Text style={styles.locationText}>
@@ -202,167 +195,165 @@ const LocationSelector: React.FC<LocationSelectorProps> = ({
         </Text>
         <Ionicons name="chevron-down" size={16} color="#666" />
       </TouchableOpacity>
+      // *Important: 바텀시트를 위로 올리기 위해서는 Portal을 사용해야 한다.
+      <Portal>
+        <BottomSheet
+          ref={bottomSheetRef}
+          index={-1}
+          snapPoints={snapPoints}
+          enablePanDownToClose
+          backdropComponent={renderBackdrop}
+          style={styles.bottomSheetContainer}
+          handleIndicatorStyle={styles.indicator}>
+          <BottomSheetView style={styles.bottomSheetContent}>
+            <View style={styles.sheetHeader}>
+              <Text style={styles.sheetTitle}>지역 선택</Text>
+              <TouchableOpacity onPress={closeBottomSheet}>
+                <Ionicons name="close" size={24} color="#333" />
+              </TouchableOpacity>
+            </View>
 
-      {/* 바텀 시트 */}
-      <BottomSheet
-        ref={bottomSheetRef}
-        index={-1}
-        snapPoints={snapPoints}
-        enablePanDownToClose
-        backdropComponent={renderBackdrop}
-        handleIndicatorStyle={styles.indicator}>
-        <BottomSheetView style={styles.bottomSheetContent}>
-          {/* 헤더 */}
-          <View style={styles.sheetHeader}>
-            <Text style={styles.sheetTitle}>지역 선택</Text>
-            <TouchableOpacity onPress={closeBottomSheet}>
-              <Ionicons name="close" size={24} color="#333" />
-            </TouchableOpacity>
-          </View>
-
-          {/* 지역 선택 영역 */}
-          <View style={styles.locationContent}>
-            {/* 지역 탭 (전국, 수도권, 부산/경상 등) */}
-            <View style={styles.regionTabContainer}>
-              <FlatList
-                data={locationData}
-                horizontal={false}
-                showsVerticalScrollIndicator={false}
-                keyExtractor={item => item.region}
-                renderItem={({item}) => (
-                  <TouchableOpacity
-                    style={[
-                      styles.regionTab,
-                      selectedRegion === item.region && styles.regionTabActive,
-                    ]}
-                    onPress={() => {
-                      setSelectedRegion(item.region);
-                      if (item.locations.length > 0) {
-                        const firstCity = item.locations[0].city;
-                        setSelectedCity(firstCity);
-
-                        if (item.locations[0].districts.length > 0) {
-                          const firstDistrict = item.locations[0].districts[0];
-                          setSelectedDistrict(firstDistrict);
-                          setSelectedDong(getDongData(firstDistrict)[0]);
-                        }
-                      }
-                    }}>
-                    <Text
+            <View style={styles.locationContent}>
+              <View style={styles.regionTabContainer}>
+                <FlatList
+                  data={locationData}
+                  horizontal={false}
+                  showsVerticalScrollIndicator={false}
+                  keyExtractor={item => item.region}
+                  renderItem={({item}) => (
+                    <TouchableOpacity
                       style={[
-                        styles.regionTabText,
+                        styles.regionTab,
                         selectedRegion === item.region &&
-                          styles.regionTabTextActive,
-                      ]}>
-                      {item.region}
-                    </Text>
-                  </TouchableOpacity>
-                )}
-              />
-            </View>
-
-            {/* 도시 및 구 선택 영역 */}
-            <View style={styles.selectionContainer}>
-              {/* 도시 선택 */}
-              <View style={styles.cityColumn}>
-                <FlatList
-                  data={getCities}
-                  keyExtractor={item => item.city}
-                  showsVerticalScrollIndicator={false}
-                  renderItem={({item}) => (
-                    <TouchableOpacity
-                      style={[
-                        styles.cityItem,
-                        selectedCity === item.city && styles.selectedItem,
+                          styles.regionTabActive,
                       ]}
                       onPress={() => {
-                        setSelectedCity(item.city);
-                        if (item.districts.length > 0) {
-                          const firstDistrict = item.districts[0];
-                          setSelectedDistrict(firstDistrict);
-                          setSelectedDong(getDongData(firstDistrict)[0]);
+                        setSelectedRegion(item.region);
+                        if (item.locations.length > 0) {
+                          const firstCity = item.locations[0].city;
+                          setSelectedCity(firstCity);
+
+                          if (item.locations[0].districts.length > 0) {
+                            const firstDistrict =
+                              item.locations[0].districts[0];
+                            setSelectedDistrict(firstDistrict);
+                            setSelectedDong(getDongData(firstDistrict)[0]);
+                          }
                         }
                       }}>
                       <Text
                         style={[
-                          styles.cityItemText,
-                          selectedCity === item.city && styles.selectedItemText,
+                          styles.regionTabText,
+                          selectedRegion === item.region &&
+                            styles.regionTabTextActive,
                         ]}>
-                        {item.city}
+                        {item.region}
                       </Text>
                     </TouchableOpacity>
                   )}
                 />
               </View>
 
-              {/* 구 선택 */}
-              <View style={styles.districtColumn}>
-                <FlatList
-                  data={getDistricts}
-                  keyExtractor={item => item}
-                  showsVerticalScrollIndicator={false}
-                  renderItem={({item}) => (
-                    <TouchableOpacity
-                      style={[
-                        styles.districtItem,
-                        selectedDistrict === item && styles.selectedItem,
-                      ]}
-                      onPress={() => {
-                        setSelectedDistrict(item);
-                        const dongList = getDongData(item);
-                        if (dongList.length > 0) {
-                          setSelectedDong(dongList[0]);
-                        }
-                      }}>
-                      <Text
+              <View style={styles.selectionContainer}>
+                <View style={styles.cityColumn}>
+                  <FlatList
+                    data={getCities}
+                    keyExtractor={item => item.city}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({item}) => (
+                      <TouchableOpacity
                         style={[
-                          styles.districtItemText,
-                          selectedDistrict === item && styles.selectedItemText,
-                        ]}>
-                        {item}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                />
-              </View>
+                          styles.cityItem,
+                          selectedCity === item.city && styles.selectedItem,
+                        ]}
+                        onPress={() => {
+                          setSelectedCity(item.city);
+                          if (item.districts.length > 0) {
+                            const firstDistrict = item.districts[0];
+                            setSelectedDistrict(firstDistrict);
+                            setSelectedDong(getDongData(firstDistrict)[0]);
+                          }
+                        }}>
+                        <Text
+                          style={[
+                            styles.cityItemText,
+                            selectedCity === item.city &&
+                              styles.selectedItemText,
+                          ]}>
+                          {item.city}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                </View>
 
-              {/* 동 선택 */}
-              <View style={styles.dongColumn}>
-                <FlatList
-                  data={getDongData(selectedDistrict)}
-                  keyExtractor={item => item}
-                  showsVerticalScrollIndicator={false}
-                  renderItem={({item}) => (
-                    <TouchableOpacity
-                      style={[
-                        styles.dongItem,
-                        selectedDong === item && styles.selectedItem,
-                      ]}
-                      onPress={() => setSelectedDong(item)}>
-                      <Text
+                <View style={styles.districtColumn}>
+                  <FlatList
+                    data={getDistricts}
+                    keyExtractor={item => item}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({item}) => (
+                      <TouchableOpacity
                         style={[
-                          styles.dongItemText,
-                          selectedDong === item && styles.selectedItemText,
-                        ]}>
-                        {item}
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                />
+                          styles.districtItem,
+                          selectedDistrict === item && styles.selectedItem,
+                        ]}
+                        onPress={() => {
+                          setSelectedDistrict(item);
+                          const dongList = getDongData(item);
+                          if (dongList.length > 0) {
+                            setSelectedDong(dongList[0]);
+                          }
+                        }}>
+                        <Text
+                          style={[
+                            styles.districtItemText,
+                            selectedDistrict === item &&
+                              styles.selectedItemText,
+                          ]}>
+                          {item}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                </View>
+
+                <View style={styles.dongColumn}>
+                  <FlatList
+                    data={getDongData(selectedDistrict)}
+                    keyExtractor={item => item}
+                    showsVerticalScrollIndicator={false}
+                    renderItem={({item}) => (
+                      <TouchableOpacity
+                        style={[
+                          styles.dongItem,
+                          selectedDong === item && styles.selectedItem,
+                        ]}
+                        onPress={() => setSelectedDong(item)}>
+                        <Text
+                          style={[
+                            styles.dongItemText,
+                            selectedDong === item && styles.selectedItemText,
+                          ]}>
+                          {item}
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                </View>
               </View>
             </View>
-          </View>
 
-          {/* 확인 버튼 */}
-          <SafeAreaView edges={['bottom']}>
-            <TouchableOpacity
-              style={styles.confirmButton}
-              onPress={confirmLocation}>
-              <Text style={styles.confirmButtonText}>확인</Text>
-            </TouchableOpacity>
-          </SafeAreaView>
-        </BottomSheetView>
-      </BottomSheet>
+            <SafeAreaView edges={['bottom']}>
+              <TouchableOpacity
+                style={styles.confirmButton}
+                onPress={confirmLocation}>
+                <Text style={styles.confirmButtonText}>확인</Text>
+              </TouchableOpacity>
+            </SafeAreaView>
+          </BottomSheetView>
+        </BottomSheet>
+      </Portal>
     </>
   );
 };
@@ -379,6 +370,10 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     marginHorizontal: 4,
     color: '#333',
+  },
+  bottomSheetContainer: {
+    zIndex: 999,
+    elevation: 10,
   },
   indicator: {
     width: 40,

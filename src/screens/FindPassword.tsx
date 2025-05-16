@@ -21,25 +21,19 @@ export default function FindPassword() {
 
   const handleGetVerificationCode = () => {
     if (!email || !phoneNumber) {
-      // 여기에 유효성 검사 및 알림 로직 추가
+      // TODO: 여기에 유효성 검사 및 알림 로직 추가
       return;
     }
 
     setIsLoading(true);
-
-    // 실제 구현에서는 여기에 인증번호 발송 API 호출
+    // TODO: 실제 구현에서는 여기에 인증번호 발송 API 호출
     setTimeout(() => {
       setIsLoading(false);
-      // 성공 시 다음 단계로 이동하는 로직
-      // 예: navigation.navigate('VerifyCode', { email, phoneNumber });
     }, 1500);
   };
 
   const formatPhoneNumber = (text: string) => {
-    // 숫자만 추출
     const cleaned = text.replace(/[^\d]/g, '');
-
-    // 전화번호 형식에 맞게 포맷팅 (010-1234-5678)
     if (cleaned.length <= 3) {
       return cleaned;
     } else if (cleaned.length <= 7) {
@@ -98,7 +92,7 @@ export default function FindPassword() {
                     onChangeText={handlePhoneNumberChange}
                     keyboardType="number-pad"
                     editable={!isLoading}
-                    maxLength={13} // 010-1234-5678 형식 맞춤
+                    maxLength={13}
                   />
                 </View>
               </View>

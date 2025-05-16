@@ -3,22 +3,9 @@ import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {StyleSheet, View, Platform} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import HomeScreen from '../screens/Main/Home';
-
-// 타입 정의
-type TabParamList = {
-  Home: undefined;
-  Search: undefined;
-  Community: undefined;
-  MyPage: undefined;
-};
+import {TabParamList} from '../types/MainNavigatorTypes';
 
 const Tab = createBottomTabNavigator<TabParamList>();
-
-// 화면들을 import하는 방식으로 변경 (실제 구현 시에는 아래 주석을 해제하세요)
-// import HomeScreen from '../screens/HomeScreen';
-// import SearchScreen from '../screens/SearchScreen';
-// import CommunityScreen from '../screens/CommunityScreen';
-// import MyPageScreen from '../screens/MyPageScreen';
 
 export default function MainNavigator() {
   return (

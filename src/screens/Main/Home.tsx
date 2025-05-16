@@ -124,7 +124,6 @@ const HomeScreen = () => {
   const [currentLocation, setCurrentLocation] = useState('강남구 삼성동');
   const bannerRef = useRef<ScrollView>(null);
 
-  // 배너 자동 슬라이드 효과
   useEffect(() => {
     const timer = setInterval(() => {
       const nextIndex = (currentBannerIndex + 1) % bannerData.length;
@@ -134,24 +133,21 @@ const HomeScreen = () => {
         x: width * nextIndex,
         animated: true,
       });
-    }, 4000); // 4초마다 슬라이드 변경
+    }, 4000);
 
     return () => clearInterval(timer);
   }, [currentBannerIndex]);
 
-  // 스크롤 이벤트 핸들러
   const handleScroll = (event: any) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(contentOffsetX / width);
     setCurrentBannerIndex(index);
   };
 
-  // 위치 변경 핸들러
   const handleLocationChange = (location: string) => {
     setCurrentLocation(location);
   };
 
-  // 카페 카드 렌더링
   const renderCafeItem = ({item, index}: {item: any; index: number}) => (
     <TouchableOpacity style={styles.cafeCard}>
       <View style={styles.discountBadge}>
@@ -176,7 +172,6 @@ const HomeScreen = () => {
     </TouchableOpacity>
   );
 
-  // 추천 메뉴 렌더링
   const renderMenuItem = ({item}: {item: any}) => (
     <TouchableOpacity style={styles.menuItem}>
       <Image source={item.image} style={styles.menuImage} />
@@ -194,10 +189,7 @@ const HomeScreen = () => {
       edges={['top', 'left', 'right']}>
       <View style={styles.container}>
         <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
-        {/* 헤더 */}
         <View style={styles.header}>
-          {/* 위치 선택기 컴포넌트로 대체 */}
           <LocationSelector
             currentLocation={currentLocation}
             onLocationChange={handleLocationChange}
@@ -215,7 +207,6 @@ const HomeScreen = () => {
         <ScrollView
           style={styles.scrollView}
           showsVerticalScrollIndicator={false}>
-          {/* 배너 캐러셀 */}
           <View style={styles.bannerContainer}>
             <ScrollView
               ref={bannerRef}
@@ -229,8 +220,6 @@ const HomeScreen = () => {
                 </View>
               ))}
             </ScrollView>
-
-            {/* 배너 인디케이터 */}
             <View style={styles.pagination}>
               {bannerData.map((_, index) => (
                 <View
@@ -243,8 +232,6 @@ const HomeScreen = () => {
               ))}
             </View>
           </View>
-
-          {/* 특가 카페 섹션 */}
           <View style={styles.sectionContainer}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>오늘의 특가 카페</Text>
@@ -252,8 +239,6 @@ const HomeScreen = () => {
                 <Text style={styles.viewAllText}>전체보기</Text>
               </TouchableOpacity>
             </View>
-
-            {/* 특가 카페 그리드 */}
             <FlatList
               data={specialCafes}
               renderItem={renderCafeItem}
@@ -264,8 +249,6 @@ const HomeScreen = () => {
               style={styles.cafeGrid}
             />
           </View>
-
-          {/* 추천 메뉴 섹션 */}
           <View style={styles.sectionContainer}>
             <View style={styles.sectionHeader}>
               <Text style={styles.sectionTitle}>인기 메뉴</Text>
@@ -273,8 +256,6 @@ const HomeScreen = () => {
                 <Text style={styles.viewAllText}>전체보기</Text>
               </TouchableOpacity>
             </View>
-
-            {/* 추천 메뉴 수평 스크롤 */}
             <FlatList
               data={recommendedMenus}
               renderItem={renderMenuItem}
@@ -285,8 +266,6 @@ const HomeScreen = () => {
               contentContainerStyle={styles.menuListContent}
             />
           </View>
-
-          {/* 이벤트 배너 */}
           <TouchableOpacity style={styles.eventBanner}>
             <Image
               source={require('../../../public/images/placeholder.png')}
@@ -298,8 +277,6 @@ const HomeScreen = () => {
               </Text>
             </View>
           </TouchableOpacity>
-
-          {/* 여백 추가 */}
           <View style={styles.bottomPadding} />
         </ScrollView>
       </View>

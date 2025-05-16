@@ -4,11 +4,7 @@ import {ActivityIndicator, View} from 'react-native';
 import AuthNavigator from './AuthNavigator';
 import MainNavigator from './MainNavigator';
 import {useAuth} from '../contexts/AuthContext';
-
-type RootStackParamList = {
-  Main: undefined;
-  Auth: undefined;
-};
+import {RootStackParamList} from '../types/StackNavigatorTypes';
 
 export default function StackNavigator() {
   const {isAuthenticated, loading} = useAuth();

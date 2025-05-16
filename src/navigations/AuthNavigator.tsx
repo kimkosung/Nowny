@@ -2,17 +2,7 @@ import React from 'react';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
 import Login from '../screens/Login';
 import FindPassword from '../screens/FindPassword';
-
-type AuthStackParamList = {
-  Login: undefined;
-  Register: undefined;
-  FindPassword: undefined;
-  Verification: {
-    phoneNumber: string;
-  };
-  Profile: undefined;
-  UnivVerification: undefined;
-};
+import {AuthStackParamList} from '../types/AuthNavigatorTypes';
 
 const Stack = createNativeStackNavigator<AuthStackParamList>();
 
