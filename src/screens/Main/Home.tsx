@@ -119,7 +119,7 @@ const recommendedMenus = [
   },
 ];
 
-const HomeScreen = () => {
+const Home = () => {
   const [currentBannerIndex, setCurrentBannerIndex] = useState(0);
   const [currentLocation, setCurrentLocation] = useState('강남구 삼성동');
   const bannerRef = useRef<ScrollView>(null);
@@ -512,4 +512,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default HomeScreen;
+export default Home;

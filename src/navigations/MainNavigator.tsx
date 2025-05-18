@@ -2,8 +2,10 @@ import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {StyleSheet, View, Platform} from 'react-native';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import HomeScreen from '../screens/Main/Home';
 import {TabParamList} from '../types/MainNavigatorTypes';
+
+import Home from '../screens/Main/Home';
+import MyPage from '../screens/Main/MyPage';
 
 const Tab = createBottomTabNavigator<TabParamList>();
 
@@ -46,7 +48,7 @@ export default function MainNavigator() {
       })}>
       <Tab.Screen
         name="Home"
-        component={HomeScreen}
+        component={Home}
         options={{
           title: '홈',
         }}
@@ -67,7 +69,7 @@ export default function MainNavigator() {
       />
       <Tab.Screen
         name="MyPage"
-        component={() => null}
+        component={MyPage}
         options={{
           title: '마이페이지',
         }}
